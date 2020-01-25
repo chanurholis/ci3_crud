@@ -12,17 +12,18 @@
             </div>
             <div class="form-group">
                 <label for="nama">NAMA</label>
-                <input type="text" class="form-control" id="nama" value="<?= set_value('nama') ?>">
+                <input type="text" style="text-transform: uppercase;" class="form-control" name="nama" id="nama" value="<?= set_value('nama') ?>">
                 <?= form_error('nama', '<small class="text-danger">', '</small>') ?>
             </div>
             <div class="form-group form-check-inline">
-                <input class="form-check-input" type="radio" name="jenis_kelamin" id="l" value="<?= set_value('jenis_kelamin') ?>">
+                <input class="form-check-input" value="L" type="radio" name="jenis_kelamin" id="l">
                 <label class="form-check-label" for="l">Laki - laki</label>
             </div>
             <div class="form-group form-check-inline">
-                <input class="form-check-input" type="radio" name="jenis_kelamin" id="p" value="<?= set_value('jenis_kelamin') ?>">
+                <input class="form-check-input" value="P" type="radio" name="jenis_kelamin" id="p">
                 <label class="form-check-label" for="p">Perempuan</label>
             </div>
+            <?= form_error('jenis_kelamin', '<small class="text-danger">', '</small>') ?>
             <button type="submit" class="btn btn-primary float-right"><i class="fa fa-paper-plane"></i> Kirim</button>
         </form>
     </div>

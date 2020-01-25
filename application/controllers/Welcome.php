@@ -36,13 +36,19 @@ class Welcome extends CI_Controller
 
 	public function murid_baru()
 	{
-		$this->form_validation->set_rules('nisn', 'NISN', 'required|is_unique[tbl_pelajar.nisn]|trim', [
+		$this->form_validation->set_rules('nisn', 'NISN', 'required|is_unique[tbl_pelajar.nisn]|trim|min_length[10]|max_length[10]', [
 			'required' => 'NISN harus diisi.',
-			'is_unique' => 'NISN sudah digunakan.'
+			'is_unique' => 'NISN sudah digunakan.',
+			'min_length' => 'NISN hanya boleh berisi 10 karakter.',
+			'max_length' => 'NISN hanya boleh berisi 10 karakter.'
 		]);
 
-		$this->form_validation->set_rules('nama', 'NAMA', 'required|trim', [
-			'required' => 'NAMA harus diisi.'
+		$this->form_validation->set_rules('nama', 'Nama', 'required|trim', [
+			'required' => 'Nama harus diisi.'
+		]);
+
+		$this->form_validation->set_rules('jenis_kelamin', 'Jenis Kelamin', 'required|trim', [
+			'required' => 'Jenis Kelamin harus dipilih.'
 		]);
 
 		if ($this->form_validation->run() == false) {
@@ -50,7 +56,58 @@ class Welcome extends CI_Controller
 			$this->load->view('partials/header', $data);
 			$this->load->view('siswa/muridBaru', $data);
 		} else {
-			echo 'Data berhasil ditambahkan.';
+			$this->session->set_flashdata('message', '<div class="alert alert-success rounded-0 mt-3" role="alert">
+				Data berhasil ditambahkan!
+			</div>');
+
+			$nisn = htmlspecialchars($this->input->post('nisn'));
+			$nama = htmlspecialchars(strtoupper($this->input->post('nama')));
+			$jenis_kelamin = htmlspecialchars($this->input->post('jenis_kelamin'));
+
+			$data = [
+				'nisn' => $nisn,
+				'nama' => $nama,
+				'jenis_kelamin' => $jenis_kelamin
+			];
+
+			$this->db->insert('tbl_pelajar', $data);
+
+			redirect('/');
 		}
+	}
+
+	public function detail($id)
+	{
+		$where = ['pelajar_id' => $id];
+
+		$data['judul'] = 'Detail Pelajar';
+		$data['result'] = $this->Pelajar_model->detail($where)->result();
+
+		$this->load->view('partials/header', $data);
+		$this->load->view('siswa/detailPelajar', $data);
+	}
+
+	public function delete($id)
+	{
+		$where = ['pelajar_id' => $id];
+
+		$this->Pelajar_model->delete_pelajar($where);
+
+		$this->session->set_flashdata('message', '<div class="alert alert-success rounded-0 mt-3" role="alert">
+		Data berhasil dihapus!
+		</div>');
+
+		redirect('/');
+	}
+
+	public function update($id)
+	{
+		$where = ['pelajar_id' => $id];
+
+		$data['judul'] = 'Update Pelajar';
+		$data['pelajar'] = $this->Pelajar_model->update($where)->result();
+
+		$this->load->view('partials/header', $data);
+		$this->load->view('siswa/updatePelajar', $data);
 	}
 }
