@@ -110,4 +110,57 @@ class Welcome extends CI_Controller
 		$this->load->view('partials/header', $data);
 		$this->load->view('siswa/updatePelajar', $data);
 	}
+
+	public function aksi_update()
+	{
+		$this->form_validation->set_rules('nisn', 'NISN', 'required|is_unique[tbl_pelajar.nisn]|trim|min_length[10]|max_length[10]', [
+			'required' => 'NISN harus diisi.',
+			'is_unique' => 'NISN sudah digunakan.',
+			'min_length' => 'NISN hanya boleh berisi 10 karakter.',
+			'max_length' => 'NISN hanya boleh berisi 10 karakter.'
+		]);
+
+		$this->form_validation->set_rules('nama', 'Nama', 'required|trim', [
+			'required' => 'Nama harus diisi.'
+		]);
+
+		$this->form_validation->set_rules('jenis_kelamin', 'Jenis Kelamin', 'required|trim', [
+			'required' => 'Jenis Kelamin harus dipilih.'
+		]);
+
+		if ($this->form_validation->run() == false) {
+			$id = htmlspecialchars($this->input->post('id'));
+
+			$where = ['pelajar_id' => $id];
+
+			$data['judul'] = 'Update Pelajar';
+			$data['pelajar'] = $this->Pelajar_model->update($where)->result();
+
+			$this->load->view('partials/header', $data);
+			$this->load->view('siswa/updatePelajar', $data);
+		} else {
+			$this->session->set_flashdata('message', '<div class="alert alert-success rounded-0 mt-3" role="alert">
+			Data berhasil diubah!
+			</div>');
+
+			$id = htmlspecialchars($this->input->post('id'));
+
+			$where = ['pelajar_id' => $id];
+
+			$nisn = htmlspecialchars($this->input->post('nisn'));
+			$nama = htmlspecialchars(strtoupper($this->input->post('nama')));
+			$jenis_kelamin = htmlspecialchars($this->input->post('jenis_kelamin'));
+
+			$data = [
+				'nisn' => $nisn,
+				'nama' => $nama,
+				'jenis_kelamin' => $jenis_kelamin
+			];
+
+			$this->db->where($where);
+			$this->db->update('tbl_pelajar', $data);
+
+			redirect('/');
+		}
+	}
 }
